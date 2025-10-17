@@ -1,0 +1,136 @@
+<!-- ...existing code... -->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Detecções</title>
+  <style>
+    body{font-family:Inter,Arial,Helvetica,sans-serif;margin:12px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    #stats{font-size:14px;color:#333}
+    #controls button{margin-left:8px}
+    #grid{display:flex;flex-wrap:wrap;gap:8px}
+    .card{border:1px solid #ddd;padding:6px;background:#fff;border-radius:6px}
+    .card img{display:block;max-width:320px;height:auto;border-radius:4px}
+    .meta{font-size:12px;color:#555;margin-top:6px}
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Dashboard de Detecções</h2>
+    <div id="controls">
+      <span id="stats">carregando...</span>
+      <button id="btn-refresh">Atualizar</button>
+    </div>
+  </header>
+
+  <section id="grid" aria-live="polite"></section>
+
+<script>
+  // polling automático, cache-bust e prepend de novas detecções
+  let lastSeenId = null;
+  const POLL_MS = 8000;
+
+  function normalizeUrl(u){
+    if (!u) return null;
+    if (typeof u === 'string') return u;
+    if (typeof u === 'object' && u._url) return u._url;
+    return String(u);
+  }
+
+  function clearGrid(){ document.getElementById('grid').innerHTML = ''; }
+
+  function renderItem(d, highlight=false){
+    const imgUrl = normalizeUrl(d.image_url || d.image || d._url);
+    const card = document.createElement('div');
+    card.className = 'card';
+    if (highlight) card.style.boxShadow = '0 0 10px rgba(0,150,0,0.35)';
+    if (imgUrl){
+      const a = document.createElement('a');
+      a.href = imgUrl;
+      a.target = '_blank';
+      const img = document.createElement('img');
+      img.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + '_ts=' + Date.now(); // cache-bust individual image
+      img.alt = `cam:${d.cam_id} id:${d.id}`;
+      img.loading = 'lazy';
+      a.appendChild(img);
+      card.appendChild(a);
+    } else {
+      const p = document.createElement('div');
+      p.textContent = 'sem imagem';
+      card.appendChild(p);
+    }
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const ts = d.timestamp ? new Date(d.timestamp).toLocaleString() : '';
+    const maxc = Number(d.max_confidence || d.maxConfidence || 0).toFixed(3);
+    const meanc = Number(d.mean_confidence || d.meanConfidence || 0).toFixed(3);
+    meta.innerHTML = `<strong>${d.cam_id}</strong> • ${ts}<br>max ${maxc} • avg ${meanc}`;
+    card.appendChild(meta);
+    return card;
+  }
+
+  async function fetchInsights() {
+    try {
+      const ts = Date.now();
+      const res = await fetch('/api/insights?period=24h&_ts=' + ts, { cache: 'no-store' });
+      if (!res.ok) throw new Error('status ' + res.status);
+      return await res.json();
+    } catch (err) {
+      console.error('Erro fetch /api/insights', err);
+      return null;
+    }
+  }
+
+  async function loadAndMerge(){
+    const data = await fetchInsights();
+    if (!data){
+      document.getElementById('stats').textContent = 'erro ao carregar';
+      return;
+    }
+
+    const grid = document.getElementById('grid');
+    const detections = (data.detections || []).slice().sort((a,b) => (b.id||0)-(a.id||0)); // newest first
+
+    document.getElementById('stats').textContent = `total ${data.total} • dispositivos ${data.by_device?.length||0} • atualizada ${new Date().toLocaleTimeString()}`;
+
+    if (lastSeenId === null){
+      // primeira carga: renderiza tudo
+      clearGrid();
+      for (const d of detections){
+        grid.appendChild(renderItem(d));
+      }
+      lastSeenId = detections.length ? detections[0].id : null;
+      return;
+    }
+
+    // encontrar novas deteções com id maior que lastSeenId
+    const newItems = detections.filter(d => (d.id||0) > (lastSeenId||0));
+    if (newItems.length === 0){
+      // nada novo: opcional atualizar imagens existentes (cache-bust) mantendo ordem
+      // não re-renderiza para evitar flicker
+      return;
+    }
+
+    // prepend novas items (mantendo ordem newest-first)
+    for (const d of newItems.reverse()){ // reverse para manter ordem cronológica ao inserir no topo
+      const el = renderItem(d, true);
+      grid.insertBefore(el, grid.firstChild);
+    }
+    // manter último id
+    lastSeenId = Math.max(lastSeenId || 0, ...newItems.map(x => x.id || 0));
+  }
+
+  document.getElementById('btn-refresh').addEventListener('click', async () => {
+    lastSeenId = null; // força reload completo
+    await loadAndMerge();
+  });
+
+  // inicial + polling
+  loadAndMerge();
+  setInterval(loadAndMerge, POLL_MS);
+</script>
+</body>
+</html>
+<!-- ...existing code... -->
