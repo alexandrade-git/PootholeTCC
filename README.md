@@ -42,8 +42,6 @@ pip install -r requirements.txt
 #$Env:MODEL_PATH = "D:\\caminho\\para\\best.pt"
 ```
 
-> Observação: não coloque chaves/segredos diretamente no repositório. Use GitHub Secrets para CI/CD.
-
 ## Rodando localmente (sem Docker)
 
 Se a aplicação usa `uvicorn` (FastAPI), execute:
