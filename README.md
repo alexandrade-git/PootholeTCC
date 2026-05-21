@@ -81,4 +81,4 @@ O dashboard foi desenvolvido com foco na usabilidade para gestores públicos, pe
 *   Wilham de Deus Ferreira
 *   Leonardo Afonso Dinareli
  
-**Instituição:** UNIP - Universidade Paulista - 2025
+**Instituição:** UNIP - Universidade Paulista - 2026
