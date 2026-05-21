@@ -80,6 +80,5 @@ O dashboard foi desenvolvido com foco na usabilidade para gestores públicos, pe
 *   Gustavo Silva Vieira
 *   Wilham de Deus Ferreira
 *   Leonardo Afonso Dinareli
-
-**Orientador:** Prof. Lauro Tomiati  
+ 
 **Instituição:** UNIP - Universidade Paulista - 2025
