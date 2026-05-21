@@ -1,71 +1,66 @@
-# Camera Receiver (Detecção de Buracos)
-````markdown
-# Camera Receiver (Detecção de Buracos)
+🛣️ Detecção Automatizada de Buracos em Vias Urbanas usando YOLOv8 e Azure
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12+-blue?style=for-the-badge&logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-0.109+-009688?style=for-the-badge&logo=fastapi" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Azure-Blob%20Storage-0089D6?style=for-the-badge&logo=microsoftazure" alt="Azure">
+  <img src="https://img.shields.io/badge/YOLO-v8-00FFFF?style=for-the-badge" alt="YOLOv8">
+</p>
+🎓 Sobre o Projeto
+Este projeto é um Trabalho de Conclusão de Curso (TCC) em Sistemas de Informação/Ciência da Computação pela Universidade Paulista (UNIP).
+O sistema propõe uma solução inteligente para o monitoramento de vias urbanas, utilizando redes neurais convolucionais para identificar buracos e anomalias no asfalto em tempo real, enviando os dados para uma infraestrutura escalável na nuvem.
+🧠 Inteligência Artificial
+Modelo: YOLOv8 (You Only Look Once).
+Performance: mAP@50 de 78%.
+Classes: `pothole` (buraco).
+Pipeline: Recebe imagem -> Inferência -> Marcação de Bounding Boxes -> Persistência.
+☁️ Arquitetura Cloud (Azure)
+O sistema foi desenhado para ser resiliente e escalável:
+Backend: FastAPI rodando em VM Linux (Ubuntu 24.04).
+Storage: Azure Blob Storage para armazenamento das evidências (fotos originais e anotadas).
+Database: SQLite para metadados e logs de detecção.
+Frontend: Dashboard interativo em tempo real.
+---
+🚀 Como Executar
+1. Requisitos
+Python 3.12+
+Conta na Azure (opcional, para armazenamento em nuvem)
+2. Instalação
+```bash
+# Clonar o repositório
+git clone https://github.com/alexandrade-git/PootholeTCC.git
+cd PootholeTCC
 
-Projeto FastAPI que recebe imagens de câmeras, executa inferência (YOLO / Ultralytics), salva imagens recebidas e anotadas, e expõe um dashboard web.
+# Criar ambiente virtual
+python3 -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate  # Windows
 
-## Estrutura principal
-
-- `app.py` - API FastAPI e lógica de inferência
-- `send_from_camera.py` - cliente que envia frames (motion-detection)
-- `dashboard.html` - dashboard frontend (frontend estático)
-- `requirements.txt` - dependências Python
-- `best.pt` - modelo treinado 
-
-## Requisitos
-
-- Python 3.8+ (recomendado criar um virtualenv)
-- `pip` instalado
-- (Opcional) Docker e Docker Compose
-
-## Preparar ambiente (PowerShell)
-
-1. Criar e ativar virtualenv (PowerShell):
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-2. Instalar dependências:
-
-```powershell
-pip install --upgrade pip
+# Instalar dependências
 pip install -r requirements.txt
 ```
-
-3. Variáveis de ambiente (exemplo PowerShell):
-
-```powershell
-#$Env:API_KEY = "ak_..."
-#$Env:AZURE_CONN_STR = "DefaultEndpointsProtocol=..."
-#$Env:MODEL_PATH = "D:\\caminho\\para\\best.pt"
+3. Variáveis de Ambiente
+Crie um arquivo `.env` ou exporte:
+```env
+API_KEY=sua_chave_secreta
+AZURE_CONN_STR=sua_connection_string
+AZURE_CONTAINER=detections
 ```
-
-## Rodando localmente (sem Docker)
-
-Se a aplicação usa `uvicorn` (FastAPI), execute:
-
-```powershell
-uvicorn app:app --host 0.0.0.0 --port 8000
-```
-
-Abra `http://localhost:8000` (ou a rota que sua `app.py` expõe). O `dashboard.html` pode ser acessado em `/dashboard.html` ou abrindo o arquivo localmente, dependendo de como o backend serve arquivos estáticos.
-
-Para enviar frames de uma câmera/local (cliente):
-
-```powershell
-python send_from_camera.py
-```
-
-## Rodando com Docker Compose
-
-1. Ajuste o `Dockerfile` / `docker-compose.yml` se necessário.
-2. Build e subir:
-
-```powershell
-docker compose build
-docker compose up -d
-```
-
-A aplicação ficará exposta em `http://localhost:8000`.
+---
+📊 Endpoints Principais
+Método	Rota	Descrição
+`POST`	`/predict/base64`	Envia imagem em Base64 para detecção.
+`GET`	`/dashboard`	Interface visual de monitoramento.
+`GET`	`/api/insights`	Dados estatísticos das últimas 24h.
+`GET`	`/health`	Check de status do modelo e sistema.
+---
+📸 Dashboard
+O dashboard foi desenvolvido com foco na usabilidade para gestores públicos, permitindo visualizar a confiança da IA e a localização (estimada) da ocorrência.
+---
+👥 Autores
+Alex Ryan Andrade de Oliveira
+Felipe Correia de Oliveira
+Gustavo Silva Vieira
+Wilham de Deus Ferreira
+Leonardo Afonso Dinareli
+Orientador: Prof. Lauro Tomiati  
+Instituição: UNIP - Universidade Paulista - 2025
