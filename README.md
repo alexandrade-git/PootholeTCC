@@ -12,6 +12,24 @@ Este projeto é um **Trabalho de Conclusão de Curso (TCC)** em Sistemas de Info
 
 O sistema propõe uma solução inteligente para o monitoramento de vias urbanas, utilizando redes neurais convolucionais para identificar buracos e anomalias no asfalto em tempo real, enviando os dados para uma infraestrutura escalável na nuvem.
 
+## 🎬 Apresentação do TCC
+
+> **Assista à demonstração completa do projeto — do modelo YOLOv8 ao dashboard em produção:**
+
+[![Assistir no YouTube](https://img.shields.io/badge/▶%20Assistir%20Apresentação-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/COjS3xzVBGE)
+
+<p align="center">
+  <a href="https://youtu.be/COjS3xzVBGE" target="_blank">
+    <img src="https://img.youtube.com/vi/COjS3xzVBGE/maxresdefault.jpg"
+         alt="Apresentação TCC — Detecção de Buracos em Vias Urbanas"
+         width="80%" style="border-radius:8px;" />
+  </a>
+  <br/>
+  <em>Clique para assistir: pipeline de inferência, dashboard e arquitetura Azure em ação</em>
+</p>
+
+---
+
 ### 🧠 Inteligência Artificial
 *   **Modelo:** YOLOv8 (You Only Look Once).
 *   **Performance:** mAP@50 de **78%**.
